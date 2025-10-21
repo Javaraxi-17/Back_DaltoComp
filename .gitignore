@@ -1,0 +1,240 @@
+# ===========================================
+# SEGURIDAD - ARCHIVOS SENSIBLES
+# ===========================================
+
+# Variables de entorno (CRÍTICO - contiene claves de Firebase)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# Archivos de configuración con credenciales
+config.json
+credentials.json
+service-account.json
+firebase-adminsdk-*.json
+
+# Claves privadas y certificados
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+# ===========================================
+# NODE.JS - DEPENDENCIAS Y CACHE
+# ===========================================
+
+# Dependencias
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Cache de npm/yarn
+.npm
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ===========================================
+# TYPESCRIPT - ARCHIVOS COMPILADOS
+# ===========================================
+
+# Archivos compilados de TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# Archivos de mapeo de source maps (opcional, descomenta si no los necesitas)
+# *.js.map
+# *.d.ts.map
+
+# ===========================================
+# LOGS Y DEBUGGING
+# ===========================================
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ===========================================
+# SISTEMA OPERATIVO
+# ===========================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ===========================================
+# IDEs Y EDITORES
+# ===========================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ===========================================
+# TESTING Y COVERAGE
+# ===========================================
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output
+
+# Jest
+.jest/
+
+# ===========================================
+# TEMPORALES Y CACHE
+# ===========================================
+
+# Cache de TypeScript
+*.tsbuildinfo
+
+# Cache de ESLint
+.eslintcache
+
+# Cache de Prettier
+.prettiercache
+
+# Cache de Babel
+.babelcache
+
+# ===========================================
+# FIREBASE ESPECÍFICO
+# ===========================================
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+
+# Firebase Functions (si las usas)
+functions/node_modules/
+functions/package-lock.json
+
+# ===========================================
+# DEPLOYMENT Y PRODUCCIÓN
+# ===========================================
+
+# Archivos de deployment
+deploy/
+deployment/
+*.tar.gz
+*.zip
+
+# Docker
+.dockerignore
+Dockerfile.local
+
+# ===========================================
+# DOCUMENTACIÓN TEMPORAL
+# ===========================================
+
+# Archivos de documentación temporal
+docs/temp/
+*.tmp
+*.temp
+
+# ===========================================
+# BACKUP Y ARCHIVOS DE RESPALDO
+# ===========================================
+
+# Archivos de backup
+*.bak
+*.backup
+*.old
+*.orig
+
+# ===========================================
+# NOTAS DE DESARROLLO
+# ===========================================
+
+# Archivos de notas personales
+NOTES.md
+TODO.md
+DEVELOPMENT.md
