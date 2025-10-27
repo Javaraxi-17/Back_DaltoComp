@@ -140,15 +140,23 @@ export async function getColorDetectionHistory(req: AuthedRequest, res: Response
   try {
     const userId = req.userId!;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const lastDocId = req.query.lastDocId as string;
 
     console.log('📚 Obteniendo historial de detecciones para usuario:', userId);
     
-    const query = firestore.collection('colorDetections')
+    // Consulta optimizada usando el índice compuesto
+    let query = firestore.collection('colorDetections')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .offset(offset);
+      .limit(limit);
+
+    // Si hay un lastDocId, usar startAfter para paginación
+    if (lastDocId) {
+      const lastDoc = await firestore.collection('colorDetections').doc(lastDocId).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
 
     const snapshot = await query.get();
     
@@ -157,10 +165,17 @@ export async function getColorDetectionHistory(req: AuthedRequest, res: Response
       ...doc.data()
     }));
 
+    // Obtener el total de documentos para este usuario
+    const totalSnapshot = await firestore.collection('colorDetections')
+      .where('userId', '==', userId)
+      .get();
+
     return res.status(200).json({
       success: true,
       colorHistory,
-      total: colorHistory.length,
+      total: totalSnapshot.size,
+      hasMore: snapshot.docs.length === limit,
+      lastDocId: snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1]?.id || null : null,
       message: "Historial de detecciones obtenido exitosamente"
     });
 
@@ -181,15 +196,23 @@ export async function getRecommendationHistory(req: AuthedRequest, res: Response
   try {
     const userId = req.userId!;
     const limit = parseInt(req.query.limit as string) || 20;
-    const offset = parseInt(req.query.offset as string) || 0;
+    const lastDocId = req.query.lastDocId as string;
 
     console.log('📚 Obteniendo historial de recomendaciones para usuario:', userId);
     
-    const query = firestore.collection('recommendations')
+    // Consulta optimizada usando el índice compuesto
+    let query = firestore.collection('recommendations')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
-      .limit(limit)
-      .offset(offset);
+      .limit(limit);
+
+    // Si hay un lastDocId, usar startAfter para paginación
+    if (lastDocId) {
+      const lastDoc = await firestore.collection('recommendations').doc(lastDocId).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
 
     const snapshot = await query.get();
     
@@ -198,10 +221,17 @@ export async function getRecommendationHistory(req: AuthedRequest, res: Response
       ...doc.data()
     }));
 
+    // Obtener el total de documentos para este usuario
+    const totalSnapshot = await firestore.collection('recommendations')
+      .where('userId', '==', userId)
+      .get();
+
     return res.status(200).json({
       success: true,
       recommendationHistory,
-      total: recommendationHistory.length,
+      total: totalSnapshot.size,
+      hasMore: snapshot.docs.length === limit,
+      lastDocId: snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1]?.id || null : null,
       message: "Historial de recomendaciones obtenido exitosamente"
     });
 
@@ -221,7 +251,7 @@ export async function getRecommendationHistory(req: AuthedRequest, res: Response
 export async function getColorDetectionById(req: AuthedRequest, res: Response) {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     console.log('🔍 Obteniendo detección específica:', id);
     
@@ -269,7 +299,7 @@ export async function getColorDetectionById(req: AuthedRequest, res: Response) {
 export async function deleteColorDetection(req: AuthedRequest, res: Response) {
   try {
     const userId = req.userId!;
-    const { id } = req.params;
+    const { id } = req.params as { id: string };
 
     console.log('🗑️ Eliminando detección:', id);
     
@@ -303,6 +333,54 @@ export async function deleteColorDetection(req: AuthedRequest, res: Response) {
 
   } catch (error: any) {
     console.error('❌ Error eliminando detección:', error);
+    
+    return res.status(500).json({ 
+      error: "Error interno del servidor",
+      code: "DELETE_ERROR" 
+    });
+  }
+}
+
+/**
+ * Elimina una recomendación específica
+ */
+export async function deleteRecommendation(req: AuthedRequest, res: Response) {
+  try {
+    const userId = req.userId!;
+    const { id } = req.params as { id: string };
+
+    console.log('🗑️ Eliminando recomendación:', id);
+    
+    const doc = await firestore.collection('recommendations').doc(id).get();
+    
+    if (!doc.exists) {
+      return res.status(404).json({ 
+        error: "Recomendación no encontrada",
+        code: "RECOMMENDATION_NOT_FOUND" 
+      });
+    }
+
+    const data = doc.data()!;
+    
+    // Verificar que la recomendación pertenece al usuario
+    if (data.userId !== userId) {
+      return res.status(403).json({ 
+        error: "No tienes permisos para eliminar esta recomendación",
+        code: "ACCESS_DENIED" 
+      });
+    }
+
+    await firestore.collection('recommendations').doc(id).delete();
+    
+    console.log('✅ Recomendación eliminada exitosamente');
+
+    return res.status(200).json({
+      success: true,
+      message: "Recomendación eliminada exitosamente"
+    });
+
+  } catch (error: any) {
+    console.error('❌ Error eliminando recomendación:', error);
     
     return res.status(500).json({ 
       error: "Error interno del servidor",

@@ -6,7 +6,8 @@ import {
   getColorDetectionHistory, 
   getRecommendationHistory,
   getColorDetectionById,
-  deleteColorDetection
+  deleteColorDetection,
+  deleteRecommendation
 } from "../controllers/colorDetectionController";
 
 const router = Router();
@@ -31,5 +32,8 @@ router.get("/detection/:id", getColorDetectionById);
 
 // Ruta para eliminar una detección específica
 router.delete("/detection/:id", deleteColorDetection);
+
+// Ruta para eliminar una recomendación específica
+router.delete("/recommendation/:id", deleteRecommendation);
 
 export default router;

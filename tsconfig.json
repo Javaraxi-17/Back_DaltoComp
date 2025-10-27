@@ -46,5 +46,6 @@
     "moduleResolution": "node",
     "lib": ["ES2020"],
     "types": ["node"]
-  }
+  },
+  "exclude": ["tests/**/*", "node_modules/**/*", "dist/**/*"]
 }
