@@ -7,7 +7,9 @@ import {
   getRecommendationHistory,
   getColorDetectionById,
   deleteColorDetection,
-  deleteRecommendation
+  deleteRecommendation,
+  analyzeImageColors,
+  analyzeImageFromBase64Controller
 } from "../controllers/colorDetectionController";
 
 const router = Router();
@@ -20,6 +22,12 @@ router.post("/save-detection", saveColorDetection);
 
 // Ruta para guardar recomendaciones
 router.post("/save-recommendations", saveRecommendations);
+
+// Ruta para analizar colores de imagen
+router.post("/analyze-image", analyzeImageColors);
+
+// Ruta para analizar colores de imagen (base64, preciso)
+router.post("/analyze-image/base64", analyzeImageFromBase64Controller);
 
 // Ruta para obtener historial de detecciones
 router.get("/history", getColorDetectionHistory);

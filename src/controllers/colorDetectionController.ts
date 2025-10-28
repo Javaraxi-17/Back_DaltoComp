@@ -2,6 +2,8 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import { firestore } from "../services/firebase";
 import type { AuthedRequest } from "../middlewares/auth";
+import { analyzeImageColors as analyzeImageColorsService } from "../services/imageAnalysis";
+import { analyzeImageFromBase64 } from "../services/pixelAnalysis";
 
 // Esquemas de validación
 const saveColorDetectionSchema = z.object({
@@ -27,6 +29,20 @@ const saveRecommendationsSchema = z.object({
     description: z.string().min(1, "La descripción es requerida"),
     tips: z.array(z.string()).min(1, "Debe haber al menos un consejo")
   })).min(1, "Debe haber al menos una recomendación")
+});
+
+const analyzeImageUrlSchema = z.object({
+  imageUrl: z.string().url("URL de imagen inválida"),
+  analysisType: z.enum(["basic", "advanced", "comprehensive"]).default("basic")
+});
+
+const analyzeImageBase64Schema = z.object({
+  imageBase64: z.string().min(100, "Imagen inválida"),
+  maxColors: z.number().min(3).max(8).optional(),
+  resize: z.object({
+    maxWidth: z.number().min(32).max(1024).optional(),
+    maxHeight: z.number().min(32).max(1024).optional()
+  }).optional()
 });
 
 /**
@@ -129,6 +145,81 @@ export async function saveRecommendations(req: AuthedRequest, res: Response) {
     return res.status(500).json({ 
       error: "Error interno del servidor guardando recomendaciones",
       code: "SAVE_RECOMMENDATIONS_ERROR" 
+    });
+  }
+}
+
+/**
+ * Analiza colores de una imagen usando algoritmos avanzados del backend
+ */
+export async function analyzeImageColors(req: AuthedRequest, res: Response) {
+  try {
+    const userId = req.userId!;
+    const data = analyzeImageUrlSchema.parse(req.body);
+
+    console.log('🔍 Analizando imagen para usuario:', userId);
+    console.log('📊 URL de imagen:', data.imageUrl);
+    console.log('📊 Tipo de análisis:', data.analysisType);
+
+    // Realizar análisis de imagen
+    const analysisResult = await analyzeImageColorsService(data.imageUrl, data.analysisType);
+    
+    console.log('✅ Análisis completado:', analysisResult.dominantColor.name);
+
+    return res.status(200).json({
+      success: true,
+      analysis: analysisResult,
+      message: "Análisis de imagen completado exitosamente"
+    });
+
+  } catch (error: any) {
+    console.error('❌ Error analizando imagen:', error);
+    
+    // Manejar errores de validación de Zod
+    if (error.name === 'ZodError') {
+      return res.status(400).json({ 
+        error: error.errors[0]?.message || "Datos de análisis inválidos",
+        code: "VALIDATION_ERROR" 
+      });
+    }
+    
+    return res.status(500).json({ 
+      error: "Error interno del servidor analizando imagen",
+      code: "IMAGE_ANALYSIS_ERROR" 
+    });
+  }
+}
+
+/**
+ * Analiza colores de una imagen desde base64 usando sharp (preciso)
+ */
+export async function analyzeImageFromBase64Controller(req: AuthedRequest, res: Response) {
+  try {
+    const userId = req.userId!;
+    const data = analyzeImageBase64Schema.parse(req.body);
+
+    console.log('🔍 Analizando imagen base64 para usuario:', userId);
+
+    const result = await analyzeImageFromBase64(data.imageBase64, {
+      maxColors: data.maxColors ?? 5,
+      resize: {
+        maxWidth: data.resize?.maxWidth ?? 224,
+        maxHeight: data.resize?.maxHeight ?? 224,
+      }
+    });
+
+    return res.status(200).json({ success: true, analysis: result });
+  } catch (error: any) {
+    console.error('❌ Error analizando imagen base64:', error);
+    if (error.name === 'ZodError') {
+      return res.status(400).json({ 
+        error: error.errors[0]?.message || "Datos de análisis inválidos",
+        code: "VALIDATION_ERROR" 
+      });
+    }
+    return res.status(500).json({ 
+      error: "Error interno del servidor analizando imagen",
+      code: "IMAGE_ANALYSIS_ERROR" 
     });
   }
 }
