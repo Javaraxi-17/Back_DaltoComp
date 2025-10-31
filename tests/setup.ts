@@ -1,10 +1,5 @@
-import { jest } from '@jest/globals';
+import 'dotenv/config';
 
-// Setup básico para pruebas funcionales del backend
-// No necesitamos mocks complejos, solo configuración básica
+// Optional: extend expect or add globals for tests here
 
-// Configurar variables de entorno para pruebas
-process.env.NODE_ENV = 'test';
 
-// Set timeout for tests
-jest.setTimeout(30000);

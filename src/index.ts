@@ -73,12 +73,14 @@ app.use((err: any, req: any, res: any, next: any) => {
 // Export app for testing
 export { app };
 
-const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
-app.listen(PORT, '0.0.0.0', () => {
-  // eslint-disable-next-line no-console
-  console.log(`API escuchando en http://0.0.0.0:${PORT}`);
-  console.log(`Acceso local: http://localhost:${PORT}`);
-  console.log(`Acceso desde red: http://10.41.41.109:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
+  app.listen(PORT, '0.0.0.0', () => {
+    // eslint-disable-next-line no-console
+    console.log(`API escuchando en http://0.0.0.0:${PORT}`);
+    console.log(`Acceso local: http://localhost:${PORT}`);
+    console.log(`Acceso desde red: http://10.41.41.109:${PORT}`);
+  });
+}
 
 

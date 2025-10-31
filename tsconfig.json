@@ -45,7 +45,7 @@
     "resolveJsonModule": true,
     "moduleResolution": "node",
     "lib": ["ES2020"],
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "exclude": ["tests/**/*", "node_modules/**/*", "dist/**/*"]
 }

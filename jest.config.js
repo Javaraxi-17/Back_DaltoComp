@@ -18,7 +18,9 @@ module.exports = {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: {
         types: ['jest', 'node']
-      }
+      },
+      diagnostics: false,
+      isolatedModules: true
     }]
   },
   testEnvironmentOptions: {
